@@ -1,0 +1,44 @@
+{% extends 'base.html'%}
+{% block content %}
+<div>
+    <form action="">
+        <div class="mb-3">
+            <label for="searchMovie" class="form-label">
+                Search for Movie:
+            </label>
+            <input type="text" class="form-control" name="searchMovie"/>
+        </div>
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+    <p>Searching for {{searchTerm}}</p>
+    <div class="row row-cols-1 row-cols-md-4 g-4">
+        {% for movie in movies %}
+        <div v-for="movie in movies" class="col">
+            <div class="card" style="width: 18rem;">
+                <img src="{{ movie.image.url }}" class="card-img-top"  alt="...">
+                <div class="card-body">
+                    <h5 class="card-title">{{movie.title}}</h5>
+                    <p class="card-text">{{movie.description}}</p>
+                    <h7 class="card-text"><a>Year:</a>{{movie.year}}<br/></h7>
+                    <h8 class="card-text"><a>Genre:</a>{{movie.genre}}<br/></h8>
+                    {% if movie.url %}
+                    <a href="{{movie.url}}" class="btn btn-primary">Movie Link</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {%endfor%}
+
+    <br />
+    <h2>Join our mailing list:</h2>
+    <form action="{% url 'signup' %}">
+        <div class="mb-3">
+            <label for="email" class="form-label">Enter your email: </label>
+            <input type="email" class="form-control" name="email" />
+        </div>
+        <button type="submit" class="btn btn-primary">Sign Up</button>
+    </form>
+
+
+</div>
+{% endblock content %}
