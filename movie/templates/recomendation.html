@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block content %}
+<form action="">
+    <input type="text" class="form-control" name="prompt" placeholder=""/>
+    <button type="submit" class="btn btn-primary">Search</button>
+</form>
+
+<span><strong>{{movie.title}}</strong> is the movie that had the greatest similarity <strong>{{ similarity }}%</strong> with the prompt <strong>{{ prompt }}. </strong></span>
+
+<br />
+<br />
+
+<div class="card" style="width: 32rem;">
+    <img src="{{ movie.image.url }}" class="card-img-top" alt="...">
+    <div class="card-body">     
+        <h5 class="card-title">{{ movie.title }}</h5>
+        <p class="card-text">{{ movie.description }}</p>
+        <h7 class="card-text">
+            <a>Year:</a> {{ movie.year }}<br />
+        </h7>
+        <h8 class="card-text">
+            <a>Genre:</a> {{ movie.genre }}<br />
+        </h8>
+        {% if movie.url %}
+        <a href="{{ movie.url }}" class="btn btn-primary">Movie Link</a>
+        {% endif %}
+</div>
+
+<br />
+
+{% endblock content %}

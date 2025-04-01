@@ -5,6 +5,11 @@ import matplotlib.pyplot as plt
 import matplotlib
 import io
 import urllib, base64
+from openai import OpenAI
+import numpy as np
+import os
+from dotenv import load_dotenv
+
 
 def home(request):
     # return HttpResponse("<h1>Welcome to Home Page</h1>")
@@ -77,3 +82,47 @@ def statistics_view(request):
 
     # Renderizar la plantilla statistics.html con la gráfica
     return render(request, 'statistics.html', {'graphic_year': graphic_year, 'graphic_genre': graphic_genre})
+
+
+load_dotenv('openai.env')
+client = OpenAI(api_key=os.environ.get('openai_apikey'))
+
+# Función para calcular similitud de coseno
+def cosine_similarity(a, b):
+    return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
+
+
+
+def recomendation(prompt):
+    # Generar embedding del prompt
+    response = client.embeddings.create(
+        input=[prompt],
+        model="text-embedding-3-small"
+    )
+    prompt_emb = np.array(response.data[0].embedding, dtype=np.float32)
+
+    # Recorrer la base de datos y comparar
+    best_movie = None
+    max_similarity = -1
+
+    for movie in Movie.objects.all():
+        movie_emb = np.frombuffer(movie.emb, dtype=np.float32)
+        similarity = cosine_similarity(prompt_emb, movie_emb)
+
+        if similarity > max_similarity:
+            max_similarity = similarity
+            best_movie = movie
+    return best_movie, max_similarity
+
+
+def recomendation_view(request):
+    # Obtener el prompt del formulario
+    prompt = request.GET.get('prompt')
+    # Si el prompt no está vacío, calcular la recomendación
+    if prompt:
+        # Llamar a la función de recomendación
+        movie, similarity = recomendation(prompt)
+        # Renderizar la plantilla recomendation.html con el resultado
+        return render(request, 'recomendation.html', {'movie': movie, 'similarity': round(similarity*100), 'prompt': prompt})
+    # Si el prompt está vacío, renderizar la plantilla sin resultados
+    return render(request, 'recomendation.html', {'movie': None, 'similarity': None})
