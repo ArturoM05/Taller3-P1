@@ -85,7 +85,7 @@ def statistics_view(request):
 
 
 load_dotenv('openai.env')
-client = OpenAI(api_key=os.environ.get('openai_apikey'))
+client = OpenAI(api_key=os.environ.get('openai_api_key'))
 
 # Función para calcular similitud de coseno
 def cosine_similarity(a, b):
